@@ -21,8 +21,11 @@ jobs:
       - name: Set up Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Build optimized binary
-        run: cargo build --release
+      - name: Build release binaries
+        run: |
+          cargo build --bin mouseblur --release
+          cargo build --bin installer --release
+          copy target\release\installer.exe target\release\MouseBlur-Setup.exe
 
       - name: Create Release Package
         shell: powershell
@@ -40,14 +43,16 @@ jobs:
           Copy-Item -Recurse "docs" "$pkg/"
           $zip = "MouseBlur-${ver}-windows-x64.zip"
           Compress-Archive -Path "$pkg/*" -DestinationPath $zip
-          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash
+          $setupHash = (Get-FileHash "target/release/MouseBlur-Setup.exe" -Algorithm SHA256).Hash
+          $zipHash = (Get-FileHash $zip -Algorithm SHA256).Hash
           $exeHash = (Get-FileHash "target/release/mouseblur.exe" -Algorithm SHA256).Hash
-          "$hash  $zip`n$exeHash  mouseblur.exe" | Set-Content "checksums.sha256"
+          "$setupHash  MouseBlur-Setup.exe`n$zipHash  $zip`n$exeHash  mouseblur.exe" | Set-Content "checksums.sha256"
 
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
           files: |
+            target/release/MouseBlur-Setup.exe
             MouseBlur-*-windows-x64.zip
             target/release/mouseblur.exe
             checksums.sha256

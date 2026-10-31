@@ -1,7 +1,10 @@
+#![windows_subsystem = "windows"]
+
 mod app;
 mod config;
 mod cursor;
 mod game_detector;
+pub mod installer;
 mod renderer;
 mod settings_gui;
 pub mod startup;
@@ -43,6 +46,8 @@ OPTIONS:
     -h, --help            Show this help dialog
     -s, --settings        Open the visual Settings & Mods menu (default on startup)
     -m, --minimized       Start minimized to tray without opening settings window
+    --install             Install MouseBlur to system with Desktop and Start Menu shortcuts
+    --uninstall           Uninstall MouseBlur and remove all shortcuts and registry keys
     --startup             Enable auto-starting MouseBlur when Windows boots
     --no-startup          Disable auto-starting MouseBlur when Windows boots
     --mode <MODE>         Set blur mode: optical, directional, ghost, neon, sparks, chromatic, speedlines, plasma
@@ -61,6 +66,14 @@ HOTKEYS:
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let is_cli_info = args.iter().any(|a| a == "-h" || a == "--help" || a == "--config");
+    if is_cli_info {
+        unsafe {
+            use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
+            let _ = AttachConsole(ATTACH_PARENT_PROCESS);
+        }
+    }
+
     let mut config = Config::load();
     let mut open_settings_on_start = true;
 
@@ -106,6 +119,22 @@ fn main() {
             }
             "-m" | "--minimized" | "--silent" | "--daemon" | "--no-gui" => {
                 open_settings_on_start = false;
+            }
+            "--install" => {
+                let _ = installer::run_install(true, true, true, false);
+                return;
+            }
+            "--install-silent" => {
+                let _ = installer::run_install(true, true, true, true);
+                return;
+            }
+            "--uninstall" => {
+                let _ = installer::run_uninstall(false);
+                return;
+            }
+            "--uninstall-silent" => {
+                let _ = installer::run_uninstall(true);
+                return;
             }
             "--startup" | "--autostart" => {
                 config.start_on_boot = true;

@@ -82,21 +82,26 @@ Choose from built-in presets or configure your own RGBA values:
 
 ---
 
-## 🛠️ Installation & Building
+## 🛠️ Installation & Setup
 
-### Prerequisites
-* Windows 10 (1809+) or Windows 11
-* Rust 1.85+ (tested on Rust 1.99+)
+### Option 1: 1-Click Windows Installer (Recommended)
+Download and run **[`MouseBlur-Setup.exe`](https://github.com/Arsh-Pathan/MouseBlur/releases)**:
+* Installs cleanly to `%LOCALAPPDATA%\Programs\MouseBlur` (no admin privileges needed).
+* Creates **Desktop** and **Start Menu** shortcuts with custom application icons.
+* Registers in Windows **Settings > Apps > Installed Apps** for 1-click uninstalling.
+* Launches MouseBlur into your system tray and opens the Settings menu.
 
-### Build Release Binary
+### Option 2: Portable Binary
+1. Download `MouseBlur-v1.0.0-windows-x64.zip` from [Releases](https://github.com/Arsh-Pathan/MouseBlur/releases).
+2. Extract anywhere and double-click `mouseblur.exe` or `run.bat`.
+
+### Option 3: Build from Source
 ```powershell
+git clone https://github.com/Arsh-Pathan/MouseBlur.git
+cd MouseBlur
 cargo build --release
 ```
-The optimized executable will be located at:
-```
-target\release\mouseblur.exe
-```
-*(Total binary size: ~425 KB, completely self-contained with no external runtime dependencies).*
+The optimized executable will be located at `target\release\mouseblur.exe`.
 
 ---
 

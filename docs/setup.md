@@ -18,6 +18,25 @@ This guide provides instructions for setting up, building, and configuring **Mou
 
 ---
 
+## 📦 1-Click Installer (Recommended)
+
+To install MouseBlur like standard Windows software:
+
+1. Download **`MouseBlur-Setup.exe`** from the [Latest Release](https://github.com/Arsh-Pathan/MouseBlur/releases).
+2. Double-click **`MouseBlur-Setup.exe`**.
+3. The installer automatically:
+   * Installs files to `%LOCALAPPDATA%\Programs\MouseBlur` (no administrator prompts required).
+   * Creates a **Desktop Shortcut** with the custom icon.
+   * Creates a **Start Menu Shortcut** in Windows Start Menu.
+   * Registers MouseBlur in Windows **Settings > Apps > Installed Apps** (Add/Remove Programs).
+   * Automatically launches MouseBlur.
+
+### Uninstalling
+* Open Windows **Settings > Apps > Installed Apps**, search for **MouseBlur**, and click **Uninstall**.
+* Or run: `mouseblur.exe --uninstall`.
+
+---
+
 ## 🛠️ Building from Source
 
 1. **Clone the Repository**:
