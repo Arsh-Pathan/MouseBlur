@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    name: Build & Publish Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build optimized binary
+        run: cargo build --release
+
+      - name: Create Release Package
+        shell: powershell
+        run: |
+          $ver = "${{ github.ref_name }}"
+          if (-not $ver -or $ver -eq "") { $ver = "v1.0.0" }
+          $pkg = "MouseBlur-${ver}-windows-x64"
+          New-Item -ItemType Directory -Path $pkg
+          Copy-Item "target/release/mouseblur.exe" "$pkg/"
+          Copy-Item "run.bat" "$pkg/"
+          Copy-Item "README.md" "$pkg/"
+          Copy-Item "LICENSE-MIT" "$pkg/"
+          Copy-Item "icon.ico" "$pkg/"
+          Copy-Item "icon.png" "$pkg/"
+          Copy-Item -Recurse "docs" "$pkg/"
+          $zip = "MouseBlur-${ver}-windows-x64.zip"
+          Compress-Archive -Path "$pkg/*" -DestinationPath $zip
+          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash
+          $exeHash = (Get-FileHash "target/release/mouseblur.exe" -Algorithm SHA256).Hash
+          "$hash  $zip`n$exeHash  mouseblur.exe" | Set-Content "checksums.sha256"
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            MouseBlur-*-windows-x64.zip
+            target/release/mouseblur.exe
+            checksums.sha256
+          draft: false
+          prerelease: false
+          generate_release_notes: true
